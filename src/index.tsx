@@ -4,21 +4,23 @@ import * as serviceWorker from "./serviceWorker";
 
 interface Note {
   title: string;
+  bodyContent: string;
 }
 
-interface Body<T> {
-  content: T;
-}
+// interface Body<T> {
+//   content: T;
+// }
 
 const NoteApp = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [title, setTitle] = useState("");
-  const [bodyContent, setbodyContent] = useState<Body<Note>>();
+  const [bodyContent, setBodyContent] = useState("");
 
   const addNote = (e: any) => {
     e.preventDefault();
-    setNotes([...notes, { title }]);
+    setNotes([...notes, { title, bodyContent }]);
     setTitle("");
+    setBodyContent("");
   };
 
   const removeNote = (title: string) => {
@@ -31,6 +33,7 @@ const NoteApp = () => {
       {notes.map((note) => (
         <div key={note.title}>
           <h3>{note.title}</h3>
+          <h3>{note.bodyContent}</h3>
           <button onClick={() => removeNote(note.title)}>x</button>
         </div>
       ))}
@@ -38,7 +41,10 @@ const NoteApp = () => {
       <form onSubmit={addNote}>
         <input value={title} onChange={(e) => setTitle(e.target.value)}></input>
         <button>add note</button>
-        <input value={title} onChange={(e) => setTitle(e.target.value)}></input>
+        <textarea
+          value={bodyContent}
+          onChange={(e) => setBodyContent(e.target.value)}
+        ></textarea>
         <button>add body</button>
       </form>
     </div>
