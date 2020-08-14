@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import * as serviceWorker from "./serviceWorker";
 
@@ -12,7 +12,8 @@ interface Note {
 // }
 
 const NoteApp = () => {
-  const [notes, setNotes] = useState<Note[]>([]);
+  const notesData = JSON.parse(localStorage.getItem("notes") || "");
+  const [notes, setNotes] = useState<Note[]>(notesData || []);
   const [title, setTitle] = useState("");
   const [bodyContent, setBodyContent] = useState("");
 
@@ -22,6 +23,10 @@ const NoteApp = () => {
     setTitle("");
     setBodyContent("");
   };
+
+  useEffect(() => {
+    localStorage.setItem("notes", JSON.stringify(notes));
+  });
 
   const removeNote = (title: string) => {
     setNotes(notes.filter((note) => note.title !== title));
