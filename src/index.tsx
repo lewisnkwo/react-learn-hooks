@@ -1,17 +1,22 @@
 import React, { useState, useEffect, useReducer } from "react";
 import ReactDOM from "react-dom";
 import * as serviceWorker from "./serviceWorker";
+import Note from "./components/note";
 
 const notesReducer = (state: any, action: any) => {
   switch (action.type) {
     case "POPULATE_NOTES":
       return action.notes;
+    case "ADD_NOTE":
+      return [...state, { title: action.title, body: action.body }];
+    case "REMOVE_NOTE":
+      return state.filter((note: any) => note.title !== action.title);
     default:
       return state;
   }
 };
 
-interface Notes {
+export interface Notes {
   title: string;
   bodyContent: string;
 }
@@ -24,27 +29,30 @@ const NoteApp = () => {
 
   const addNote = (e: any) => {
     e.preventDefault();
-    // setNotes([...notes, { title, bodyContent }]);
+    dispatch({
+      type: "ADD_NOTE",
+      title,
+      bodyContent,
+    });
     setTitle("");
     setBodyContent("");
+  };
+
+  const removeNote = (title: string) => {
+    dispatch({ type: "REMOVE_NOTE", title });
   };
 
   useEffect(() => {
     const notes = JSON.parse(localStorage.getItem("notes") || "");
 
     if (notes) {
-      dispatch({ type: "POPULATE_NOTES", notes: notes });
-      // setNotes(notesData);
+      dispatch({ type: "ADD_NOTE", notes: notes });
     }
   }, []);
 
   useEffect(() => {
     localStorage.setItem("notes", JSON.stringify(notes));
   }, [notes]);
-
-  const removeNote = (_title: string) => {
-    // setNotes(notes.filter((note) => note.title !== title));
-  };
 
   return (
     <div>
@@ -63,29 +71,6 @@ const NoteApp = () => {
         <button>add body</button>
       </form>
     </div>
-  );
-};
-
-interface Note {
-  note: Notes;
-  removeNote: (note: string) => void;
-}
-
-const Note = ({ note, removeNote }: Note) => {
-  useEffect(() => {
-    console.log("Setting up effect");
-
-    return () => {
-      console.log("cleaning up effect");
-    };
-  }, []);
-
-  return (
-    <>
-      <h3>{note.title}</h3>
-      <h3>{note.bodyContent}</h3>
-      <button onClick={() => removeNote(note.title)}>x</button>
-    </>
   );
 };
 
