@@ -2,19 +2,14 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import * as serviceWorker from "./serviceWorker";
 
-interface Note {
+interface Notes {
   title: string;
   bodyContent: string;
 }
 
-// interface Body<T> {
-//   content: T;
-// }
-
 const NoteApp = () => {
-  const notesData = JSON.parse(localStorage.getItem("notes") || "");
-  const [notes, setNotes] = useState<Note[]>(notesData || []);
-  const [title, setTitle] = useState("");
+  const [notes, setNotes] = useState<Notes[]>([]);
+  const [title, setTitle] = useState<string>("");
   const [bodyContent, setBodyContent] = useState("");
 
   const addNote = (e: any) => {
@@ -25,8 +20,16 @@ const NoteApp = () => {
   };
 
   useEffect(() => {
+    const notesData = JSON.parse(localStorage.getItem("notes") || "");
+
+    if (notesData) {
+      setNotes(notesData);
+    }
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem("notes", JSON.stringify(notes));
-  });
+  }, [notes]);
 
   const removeNote = (title: string) => {
     setNotes(notes.filter((note) => note.title !== title));
@@ -36,11 +39,7 @@ const NoteApp = () => {
     <div>
       <h1>Notes</h1>
       {notes.map((note) => (
-        <div key={note.title}>
-          <h3>{note.title}</h3>
-          <h3>{note.bodyContent}</h3>
-          <button onClick={() => removeNote(note.title)}>x</button>
-        </div>
+        <Note key={note.title} note={note} removeNote={removeNote} />
       ))}
       <p>Add note</p>
       <form onSubmit={addNote}>
@@ -53,6 +52,29 @@ const NoteApp = () => {
         <button>add body</button>
       </form>
     </div>
+  );
+};
+
+interface Note {
+  note: Notes;
+  removeNote: (note: string) => void;
+}
+
+const Note = ({ note, removeNote }: Note) => {
+  useEffect(() => {
+    console.log("Setting up effect");
+
+    return () => {
+      console.log("cleaning up effect");
+    };
+  }, []);
+
+  return (
+    <>
+      <h3>{note.title}</h3>
+      <h3>{note.bodyContent}</h3>
+      <button onClick={() => removeNote(note.title)}>x</button>
+    </>
   );
 };
 
