@@ -1,6 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import ReactDOM from "react-dom";
 import * as serviceWorker from "./serviceWorker";
+
+const notesReducer = (state: any, action: any) => {
+  switch (action.type) {
+    case "POPULATE_NOTES":
+      return action.notes;
+    default:
+      return state;
+  }
+};
 
 interface Notes {
   title: string;
@@ -8,22 +17,24 @@ interface Notes {
 }
 
 const NoteApp = () => {
-  const [notes, setNotes] = useState<Notes[]>([]);
+  // const [notes, setNotes] = useState<Notes[]>([]);
+  const [notes, dispatch] = useReducer(notesReducer, []);
   const [title, setTitle] = useState<string>("");
   const [bodyContent, setBodyContent] = useState("");
 
   const addNote = (e: any) => {
     e.preventDefault();
-    setNotes([...notes, { title, bodyContent }]);
+    // setNotes([...notes, { title, bodyContent }]);
     setTitle("");
     setBodyContent("");
   };
 
   useEffect(() => {
-    const notesData = JSON.parse(localStorage.getItem("notes") || "");
+    const notes = JSON.parse(localStorage.getItem("notes") || "");
 
-    if (notesData) {
-      setNotes(notesData);
+    if (notes) {
+      dispatch({ type: "POPULATE_NOTES", notes: notes });
+      // setNotes(notesData);
     }
   }, []);
 
@@ -31,14 +42,14 @@ const NoteApp = () => {
     localStorage.setItem("notes", JSON.stringify(notes));
   }, [notes]);
 
-  const removeNote = (title: string) => {
-    setNotes(notes.filter((note) => note.title !== title));
+  const removeNote = (_title: string) => {
+    // setNotes(notes.filter((note) => note.title !== title));
   };
 
   return (
     <div>
       <h1>Notes</h1>
-      {notes.map((note) => (
+      {notes.map((note: any) => (
         <Note key={note.title} note={note} removeNote={removeNote} />
       ))}
       <p>Add note</p>
