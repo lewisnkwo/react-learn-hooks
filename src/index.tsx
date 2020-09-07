@@ -2,6 +2,7 @@ import React, { useState, useEffect, useReducer } from "react";
 import ReactDOM from "react-dom";
 import * as serviceWorker from "./serviceWorker";
 import Note from "./components/note";
+import List from "./components/item-list";
 
 const notesReducer = (state: any, action: any) => {
   switch (action.type) {
@@ -22,7 +23,6 @@ export interface Notes {
 }
 
 const NoteApp = () => {
-  // const [notes, setNotes] = useState<Notes[]>([]);
   const [notes, dispatch] = useReducer(notesReducer, []);
   const [title, setTitle] = useState<string>("");
   const [bodyContent, setBodyContent] = useState("");
@@ -70,6 +70,8 @@ const NoteApp = () => {
         ></textarea>
         <button>add body</button>
       </form>
+      <h1>List</h1>
+      <List />
     </div>
   );
 };
